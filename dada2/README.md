@@ -11,3 +11,12 @@
 ### This command needs to be run FOR EVERY R1 and R2 seqs.fastq file output by the previous step
 #### ** To reflect manual changes made in the mapping file during combination, sample 81 is changed to sample 181.1 and sample 180 in the Argonne2_March batch is changed to 180.1.
 
+###3. Delete reads that are not present in both the forward and reverse read files for each sample. Dada2 can't deal with incompatible read identifiers:
+#### cd {path to fastq files by sample}
+#### Rscript deleteDiffs.R -p {path to fastq files by sample}
+#### ex: Rscript deleteDiffs.R -p /scratch/users/ctataru5/microbiome/dada2/ 
+
+###4. Run the dada2 algorithm passing in the path name to the folder with fastq by sample
+#### cd {path to new fastq files by sample}
+####  Rscript runDada2.R -p {path to fastq files}
+####  Outputs an otu table in text format

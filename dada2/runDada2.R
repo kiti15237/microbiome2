@@ -1,5 +1,12 @@
+library(optparse)
+option_list <- list(
+  make_option(c("-p", "--path"), type = "character", default=NULL, help = "path contained fastq files by sample")
+)
+opt_parser = OptionParser(option_list=option_list)
+opt = parse_args(opt_parser)
 
-path <- "/scratch/users/ctataru5/microbiome/dada2/MiSeq_SOP/test/" # CHANGE ME to the directory containing the fastq files after unzipping.
+path <- opt$path
+#path <- "/scratch/users/ctataru5/microbiome/dada2/MiSeq_SOP/test/" # CHANGE ME to the directory containing the fastq files after unzipping.
 fns <- list.files(path)
 fns
 fastqs <- fns[grepl(".fastq$", fns)]
