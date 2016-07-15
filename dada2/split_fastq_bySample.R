@@ -1,3 +1,5 @@
+source("http://bioconductor.org/biocLite.R")
+biocLite('dada2')
 library(optparse)
 option_list <- list(
   make_option(c("-i", "--infile"), type = "character", default=NULL, help = "otu table file name")
