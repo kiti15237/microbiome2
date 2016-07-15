@@ -18,5 +18,5 @@
 
 ###4. Run the dada2 algorithm passing in the path name to the folder with fastq by sample
 #### cd {path to new fastq files by sample}
-####  Rscript runDada2.R -p {path to fastq files}
+####  Rscript runDada2.R -p {path to fastq files} -o {path to output directory}
 ####  Outputs an otu table in text format
