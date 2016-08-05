@@ -22,3 +22,21 @@
       `biocLite('phyloseq')`   
   * Outputs an otu table with readSeqs x sampleId in text format, a mapping file that matches the sample ids in the otu table  
       `Rscript runDada2.R -p {path to fastq files} -o {path to output directory} -m {path to mapping file}`  
+  * Note: you need to run on big mem cluster. Don't know the exact mem requirements, but regular srun login with no mem specifications will fail
+
+###5. You now have an sequence x sample table, a phylogentic tree, a pure sequence fasta file, and a corresponding mapping file in the out directory. Now use blast to assign the reads to otu ids using green genes database 13_5 (or silva if using tax4fun)
+  * download the gg_13_5.fasta.gz databse fasta file from : http://greengenes.secondgenome.com/downloads/database/13_5
+  * install blast locally: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/LATEST/
+  * `makeblastdb -in {path to gg_13_5.fasta} -parse_seqids -dbtype nucl`
+  * `blastn -db {path to gg_13_5.fasta}(same as prev. step ^) -query {path to sequences.fasta}(from step 4) -num_alignments 1 -o {path to output directory}`
+  * Parse the output of blast into a table of sequenceid (assigned in uniquestoFasta() function in runDada2) and otuId. Output in same folder as input.
+     `clean_blastOutput.py -i {path to blastn output.txt} `
+  * The order to sequences remains the same, so otuIds can be directly pasted back into the rownames of the otu_table output by runDada2.
+     `assign_blast_otuid.R -b {blast file from clean_blastOutput.py} -s {sequence.fasta from runDada2.py} -o {path to outdir}`
+  * Write newly formed seqtab with otu ids into biom format to use with picrust:
+     `write_otu_biom`
+  * transfer biom files to sherlock
+  * DON'T normalize by copy number, because it'll do weird things when we try to compare between tables that have all taxa vs. just the rare ones
+  * run picrust metagenome_contributions.py on seqtab_otuId.biom files
+  * transfer back locally
+  * runOnKos() in ko_contributions_analysis. TODO: write separate script for writing KO_table from list format
