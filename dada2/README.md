@@ -20,7 +20,7 @@
   * You will need to install the phyloseq and dada2 packages
   
       `source("https://bioconductor.org/biocLite.R")`
-#### ...`biocLite('dada2')`
-#### + `biocLite('phyloseq')`
-####  Rscript runDada2.R -p {path to fastq files} -o {path to output directory} -m {path to mapping file}
+      `biocLite('dada2')`
+      `biocLite('phyloseq')` 
+  * Rscript runDada2.R -p {path to fastq files} -o {path to output directory} -m {path to mapping file}
 ####  Outputs an otu table with readSeqs x sampleId in text format, a mapping file that matches the sample ids in the otu table
