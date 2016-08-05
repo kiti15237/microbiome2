@@ -17,7 +17,7 @@
 #### ex: Rscript deleteDiffs.R -p /scratch/users/ctataru5/microbiome/dada2/ 
 
 ###4. Run the dada2 algorithm passing in the path name to the folder with fastq by sample
-#### You will need to install the phyloseq and dada2 packages
+#### ..* You will need to install the phyloseq and dada2 packages
 #### ... `source("https://bioconductor.org/biocLite.R")`
 #### ...`biocLite('dada2')`
 #### + `biocLite('phyloseq')`
