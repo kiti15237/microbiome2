@@ -34,9 +34,13 @@
   * The order to sequences remains the same, so otuIds can be directly pasted back into the rownames of the otu_table output by runDada2.
      `assign_blast_otuid.R -b {blast file from clean_blastOutput.py} -s {sequence.fasta from runDada2.py} -o {path to outdir}`
   * Write newly formed seqtab with otu ids into biom format to use with picrust:
-     `write_otu_biom`
+     `write_otu_biom -i {path to .txt file you want to convert}`
   * transfer biom files to sherlock
   * DON'T normalize by copy number, because it'll do weird things when we try to compare between tables that have all taxa vs. just the rare ones
-  * run picrust metagenome_contributions.py on seqtab_otuId.biom files
-  * transfer back locally
-  * runOnKos() in ko_contributions_analysis. TODO: write separate script for writing KO_table from list format
+  * Determine contributions of each OTU to each sample  
+    *  I'm currently using metagenome_contributions rather blindly, and without any normalization. Need to read more to see what norms need to be done  
+     `metagenome_contributions.py -i {seqtab.biom} -o {output file} -gg_version 13_5`   
+  * transfer back locally  
+  * Convert the list based metagenome_contributions output into table of ko abundance x sample  
+     `write_KO_table -i {metagenome_contributions.tab} -m {mapping_dada2.txt}`  
+  * Run analysis at will, ko_gene_contribution_analysis.R doesn't seem good.  
