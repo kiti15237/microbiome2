@@ -36,7 +36,12 @@
   * Write newly formed seqtab with otu ids into biom format to use with picrust:
      `write_otu_biom -i {path to .txt file you want to convert}`
   * transfer biom files to sherlock
-  * DON'T normalize by copy number, because it'll do weird things when we try to compare between tables that have all taxa vs. just the rare ones
+  * Note on normalization: normalizing by copy number should theoretically still allow us to compare between tables. It takes the predicted copy number of each OTU found in nature (using IMG but not clear which datasets from IMG) and divides your abundance by the copy number. This way, if your abundance is 'normal' you get a new abundance of 1. I feel intuitively that this is not appropriate for our analysis, but I don't know why)
+  * Create KO table  
+     `predict_metagenomes.py -i {path to unnormalized seqtab by otu id .biom} -o {KO_table.biom}`  
+
+
+***************************************************************
   * Determine contributions of each OTU to each sample  
     *  I'm currently using metagenome_contributions rather blindly, and without any normalization. Need to read more to see what norms need to be done  
      `metagenome_contributions.py -i {seqtab.biom} -o {output file} -gg_version 13_5`   
