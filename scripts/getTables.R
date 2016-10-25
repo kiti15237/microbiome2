@@ -24,11 +24,12 @@ getOtuTable <- function(){
   return(table)
 }
 
-getPcaFilteredOtuTable <- function(){
+getPcaFilteredOtuTable <- function(mapping){
   biom <-import_biom("~/Lab/16S/otuTables/open_oct/pcaFiltered/otu_table_pcaFiltered_byDiffs.biom")
   table <- otu_table(biom, taxa_are_rows = T)
   table <- formatTable(table)
-  return(table)
+  mapping <- mapping[!(mapping$SampleID %in% setdiff(mapping$SampleID, colnames(table))),]
+  return(list(table, mapping))
 }
 
 
@@ -43,9 +44,9 @@ formatTable <- function(table){
 
 
 splitAutControl <- function(table, mapping){
-  table <- table[ , mapping$SampleID != "33"] #thired sibling of pair 2
+  #table <- table[ , mapping$SampleID != "33"] #thired sibling of pair 2
   mapping <- mapping[ mapping$SampleID != "33", ]
-  table <- table[ , mapping$SampleID != "232"] #third sibling of pair 55 w/ autism
+  #table <- table[ , mapping$SampleID != "232"] #third sibling of pair 55 w/ autism
   mapping <- mapping[ mapping$SampleID != "232", ]
   
   
