@@ -24,6 +24,13 @@ getOtuTable <- function(){
   return(table)
 }
 
+getPcaFilteredOtuTable <- function(){
+  biom <-import_biom("~/Lab/16S/otuTables/open_oct/pcaFiltered/otu_table_pcaFiltered_byDiffs.biom")
+  table <- otu_table(biom, taxa_are_rows = T)
+  table <- formatTable(table)
+  return(table)
+}
+
 
 formatTable <- function(table){
   colnames(table) <- gsub("X", "", colnames(table))
