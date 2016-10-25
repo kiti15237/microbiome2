@@ -1,0 +1,89 @@
+Logging started at 14:54:41 on 20 Oct 2016
+QIIME version: 1.9.1
+
+qiime_config values:
+pick_otus_reference_seqs_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta
+sc_queue	all.q
+pynast_template_alignment_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set_aligned/85_otus.pynast.fasta
+cluster_jobs_fp	start_parallel_jobs.py
+assign_taxonomy_reference_seqs_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta
+torque_queue	friendlyq
+jobs_to_start	1
+denoiser_min_per_core	50
+assign_taxonomy_id_to_taxonomy_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt
+temp_dir	/local-scratch/ctataru5/10322845/
+blastall_fp	blastall
+seconds_to_sleep	1
+
+parameter file values:
+parallel:jobs_to_start	1
+
+Input file md5 sums:
+otu_table_pcaFiltered_byDiffs.biom: 892720c1e5baa2e15e34827f50e66b70
+../../../raw/mapping/mapping_merged_oct.txt: e065f7d5775dbfaf91c2fc321be8d513
+../rep_set.tre: a5723eea5ba393d202678369415324fb
+
+Executing commands.
+
+# Beta Diversity (weighted_unifrac) command 
+beta_diversity.py -i otu_table_pcaFiltered_byDiffs.biom -o plots --metrics weighted_unifrac  -t ../rep_set.tre 
+
+Stdout:
+
+Stderr:
+
+# Rename distance matrix (weighted_unifrac) command 
+mv plots/weighted_unifrac_otu_table_pcaFiltered_byDiffs.txt plots/weighted_unifrac_dm.txt
+
+Stdout:
+
+Stderr:
+
+# Principal coordinates (weighted_unifrac) command 
+principal_coordinates.py -i plots/weighted_unifrac_dm.txt -o plots/weighted_unifrac_pc.txt 
+
+Stdout:
+
+Stderr:
+/home/ctataru5/.local/lib/python2.7/site-packages/skbio/stats/ordination/_principal_coordinate_analysis.py:107: RuntimeWarning: The result contains negative eigenvalues. Please compare their magnitude with the magnitude of some of the largest positive eigenvalues. If the negative ones are smaller, it's probably safe to ignore them, but if they are large in magnitude, the results won't be useful. See the Notes section for more details. The smallest eigenvalue is -0.0229900685368 and the largest is 0.612419628481.
+  RuntimeWarning
+
+# Make emperor plots, weighted_unifrac) command 
+make_emperor.py -i plots/weighted_unifrac_pc.txt -o plots/weighted_unifrac_emperor_pcoa_plot/ -m ../../../raw/mapping/mapping_merged_oct.txt 
+
+Stdout:
+
+Stderr:
+
+# Beta Diversity (unweighted_unifrac) command 
+beta_diversity.py -i otu_table_pcaFiltered_byDiffs.biom -o plots --metrics unweighted_unifrac  -t ../rep_set.tre 
+
+Stdout:
+
+Stderr:
+
+# Rename distance matrix (unweighted_unifrac) command 
+mv plots/unweighted_unifrac_otu_table_pcaFiltered_byDiffs.txt plots/unweighted_unifrac_dm.txt
+
+Stdout:
+
+Stderr:
+
+# Principal coordinates (unweighted_unifrac) command 
+principal_coordinates.py -i plots/unweighted_unifrac_dm.txt -o plots/unweighted_unifrac_pc.txt 
+
+Stdout:
+
+Stderr:
+/home/ctataru5/.local/lib/python2.7/site-packages/skbio/stats/ordination/_principal_coordinate_analysis.py:107: RuntimeWarning: The result contains negative eigenvalues. Please compare their magnitude with the magnitude of some of the largest positive eigenvalues. If the negative ones are smaller, it's probably safe to ignore them, but if they are large in magnitude, the results won't be useful. See the Notes section for more details. The smallest eigenvalue is -0.0461281598192 and the largest is 2.35125597246.
+  RuntimeWarning
+
+# Make emperor plots, unweighted_unifrac) command 
+make_emperor.py -i plots/unweighted_unifrac_pc.txt -o plots/unweighted_unifrac_emperor_pcoa_plot/ -m ../../../raw/mapping/mapping_merged_oct.txt 
+
+Stdout:
+
+Stderr:
+
+
+Logging stopped at 14:54:53 on 20 Oct 2016
