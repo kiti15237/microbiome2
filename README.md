@@ -1,4 +1,26 @@
 #####
+
+#####open_oct
+Otu tables of all sorts: original, normCSS (normalized with cumulative sum scoring) , pca_filtered, etc.
+
+
+#####Qiime
+Lab stuff, from otu picking, etc. TODO: Need to put instructions of how to use qiime for my own notes
+
+#####Dada2
+Instructions on how to run
+http://biorxiv.org/content/early/2015/08/06/024034
+
+
+
+
+
+
+
+
+
+
+
 ####Results for parents####
 1. Run the script resultsForParents.R to produce individual sibling pair excel files
 2. Run the script emperor_mapping.R to produce individual sibling pair mapping files that will make personalizing with emperor much easier
