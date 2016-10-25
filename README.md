@@ -4,6 +4,14 @@
 Otu tables of all sorts: original, normCSS (normalized with cumulative sum scoring) , pca_filtered, etc.
 
 
+#####Qiime
+Lab stuff, from otu picking, etc. TODO: Need to put instructions of how to use qiime for my own notes
+
+#####Dada2
+Instructions on how to run
+http://biorxiv.org/content/early/2015/08/06/024034
+
+
 
 
 
