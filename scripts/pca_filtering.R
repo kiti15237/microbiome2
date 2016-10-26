@@ -22,16 +22,16 @@ plot(pca$x[,1], pca$x[,2])
 
 #The idea is we keep everything that is not super congregated in the middle
 
-toKeep = pca$x[,1] > 2.2 | pca$x[,1] < -2 | pca$x[,2] > 2 | pca$x[,2] < -2
+toKeep = pca$x[,1] > 2.5 | pca$x[,1] < -2.5 | pca$x[,2] > 2.5 | pca$x[,2] < -2.5
 prunedTable_byDiffs <- table[toKeep, ]
 
 #look at the pca after we've removed the 'extraneous' otus
 plot(pca$x[,1][toKeep], pca$x[,2][toKeep])
 
 pca_pruned= prcomp(t(prunedTable_byDiffs))
-autoplot(pca_pruned, data = mapping, colour = "Treatment", size = 10, loadings = T)
+autoplot(pca_pruned, data = mapping, colour = "Treatment", size = 10, loadings = F)
 
 pca_orig = prcomp(t(table))
-autoplot(pca_orig, data = mapping, colour = "Treatment", size = 10, loadings = T)
+autoplot(pca_orig, data = mapping, colour = "Treatment", size = 10, loadings = F)
 
-write.table(prunedTable_byDiffs , "~/Lab/16S/otuTables/open_oct/otu_table_pcaFiltered_byDiffs.txt", quote = F)
+write.table(prunedTable_byDiffs , "~/Lab/16S/otuTables/open_oct/otu_table_pcaFiltered_byDiffs.txt", quote = F, row.names = T)
