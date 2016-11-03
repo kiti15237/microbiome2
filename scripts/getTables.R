@@ -23,12 +23,36 @@ getOtuTable <- function(){
   table <- formatTable(table)
   return(table)
 }
+getOtuTableL3 <- function(){
+  biom <-import_biom("~/Lab/16S/otuTables/open_oct/phylogeny_levels/filtered_otu_table_normCSS_L3.biom")
+  table <- otu_table(biom, taxa_are_rows = T)
+  table <- formatTable(table)
+  return(table)
+}
+getOtuTableL4 <- function(){
+  biom <-import_biom("~/Lab/16S/otuTables/open_oct/phylogeny_levels/filtered_otu_table_normCSS_L4.biom")
+  table <- otu_table(biom, taxa_are_rows = T)
+  table <- formatTable(table)
+  return(table)
+}
+getOtuTableL5 <- function(){
+  biom <-import_biom("~/Lab/16S/otuTables/open_oct/phylogeny_levels/filtered_otu_table_normCSS_L5.biom")
+  table <- otu_table(biom, taxa_are_rows = T)
+  table <- formatTable(table)
+  return(table)
+}
+getOtuTableL6 <- function(){
+  biom <-import_biom("~/Lab/16S/otuTables/open_oct/phylogeny_levels/filtered_otu_table_normCSS_L6.biom")
+  table <- otu_table(biom, taxa_are_rows = T)
+  table <- formatTable(table)
+  return(table)
+}
 
-getPcaFilteredOtuTable <- function(mapping){
+getPcaFilteredOtuTable <- function(){
   table <- read.csv("~/Lab/16S/otuTables/open_oct/pca_filtered/otu_table_pcaFiltered_byDiffs.txt", row.names=1, sep="")
   table <- formatTable(table)
-  mapping <- mapping[!(mapping$SampleID %in% setdiff(mapping$SampleID, colnames(table))),]
-  return(list(table, mapping))
+ # mapping <- mapping[!(mapping$SampleID %in% setdiff(mapping$SampleID, colnames(table))),]
+  return(table)
 }
 
 
@@ -41,11 +65,16 @@ formatTable <- function(table){
   return(table)
 }
 
+getTree <- function(){
+  tree = read_tree_greengenes("~/Lab/16S/otuTables/open_oct/rep_set.tre")
+  return(tree)
+}
+
 
 splitAutControl <- function(table, mapping){
-  #table <- table[ , mapping$SampleID != "33"] #thired sibling of pair 2
+  table <- table[ , mapping$SampleID != "33"] #thired sibling of pair 2
   mapping <- mapping[ mapping$SampleID != "33", ]
-  #table <- table[ , mapping$SampleID != "232"] #third sibling of pair 55 w/ autism
+  table <- table[ , mapping$SampleID != "232"] #third sibling of pair 55 w/ autism
   mapping <- mapping[ mapping$SampleID != "232", ]
   
   
