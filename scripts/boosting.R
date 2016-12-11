@@ -1,9 +1,9 @@
 library(glmnet)
 source("~/Lab/microbiome2/scripts/getTables.R")
 source("~/Lab/16S/scripts/getTrainTestCohorts.R")
-
 mapping <- getMapping()
 table <- getPcaFilteredOtuTable()
+
 
 
 letters = c('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h','i', 'j', 'k', 'l', 'm', 'n')

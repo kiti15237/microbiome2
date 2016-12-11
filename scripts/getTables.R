@@ -1,7 +1,10 @@
 library(phyloseq)
 
+css_normalized_otu_path <- "~/Lab/16S/otuTables/open_oct/filtered_otu_table_normCSS.biom"
+
+
 getMapping <- function(){
-  mapping <- read.delim("~/Lab/16S/mapping/mapping_merged_oct.txt")
+  mapping <- read.delim("~/Lab/16S/mapping/mapping_file_MMD_11212016_FINAL.txt")
   colnames(mapping)[1] = "SampleID"
   mapping$SampleID <- as.character(mapping$SampleID)
   mapping <- mapping[mapping$SampleID != "168.1",] #sequence sucks
@@ -18,8 +21,9 @@ getMapping <- function(){
 }
 
 getOtuTable <- function(){
-  biom <-import_biom("~/Lab/16S/otuTables/open_oct/filtered_otu_table_normCSS.biom")
+  biom <-phyloseq::import_biom("~/Lab/16S/dada2/filtered_otu_table_normCSS.biom")
   table <- otu_table(biom, taxa_are_rows = T)
+  table <- table[apply(table, 1, function(row) return(sum(row) > 0)), ]
   table <- formatTable(table)
   return(table)
 }
@@ -58,9 +62,6 @@ getPcaFilteredOtuTable <- function(){
 
 formatTable <- function(table){
   colnames(table) <- gsub("X", "", colnames(table))
-  table <- table[, colnames(table)!="168.1"]
-  table <- table[, colnames(table)!="367"]
-  mapping <- mapping[mapping$SampleID != "211",] #seqeunce sucks
   table <- table[,order(colnames(table))]
   return(table)
 }

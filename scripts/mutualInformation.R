@@ -1,4 +1,5 @@
-
+library(entropy)
+library(HDMD)
 
 
 
@@ -14,6 +15,8 @@ getMI <- function(otuVector, mapping){
   #(2,2) = Aut, otu
   y[2,2] <- sum(mapping$Treatment == "Aut" & otuVector > 0)
   
+  #y = rbind(otuVector , 1 * (mapping$Treatment == "Control"))
+  
   return(mi.empirical(y))
 }
 
@@ -23,9 +26,18 @@ getOtusGreatestMI <- function(table, mapping, n){
   return(names(otu_MI_sorted[1:n]))
 }
 
-
+getOtusMICutoff <- function(table, mapping, cutoff){
+  otu_MI <- apply(table, 1, getMI, mapping)
+  return(names(otu_MI[otu_MI > cutoff]))
+}
 
 source("~/Lab/microbiome2/scripts/getTables.R")
 mapping <- getMapping()
-table <- getOtuTable()
-otus <- getOtusGreatestMI(table, mapping, 30)
+table <- getOtuTable()#
+#table <- t(otu_table(ps))
+otu_MI <- apply(table, 1, getMI, mapping)
+
+numOtus <- sapply(seq(min(otu_MI), max(otu_MI), by=.00001), function(cutoff) returnnumOtu <- sum(otu_MI > cutoff))
+
+#plot(seq(min(otu_MI), max(otu_MI), by=.00001), numOtus)
+

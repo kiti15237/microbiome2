@@ -4,7 +4,7 @@ source("~/Lab/microbiome2/scripts/getTables.R")
 
 
 mapping <- getMapping()
-table <- getOtuTable()
+table <- getPcaFilteredOtuTable()
 
 #potentially filter out otu's based on low standard dev. across samples.
 filtering <- function(table, sampleMin, SDMultiplier, sampleMax){
@@ -78,6 +78,11 @@ lambda <- 0.1
 glmnet_family <- "binomial"
 relevantVars <- c()
 
+letters = c('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h','i', 'j', 'k', 'l', 'm', 'n')
+combos = combn(letters, 3)
+labels <- unique(apply(combos, 2, paste, collapse=""))
+rownames(table) <- labels[1:nrow(table)]
+
 temp <- splitAutControl(table, mapping)
 aut <- temp[[1]]
 control <- temp[[2]]
@@ -100,14 +105,26 @@ for(iter in seq(1:iterations)){
   cMap_shuffle <- cMap[control_order, ] # keeps map in that same order
   
   aut_train = aut_shuffle[1: (nrow(aut) * 2 / 3), ]
-  control_train = control_shuffle[1: (nrow(control) * 2 / 3), ]
-  aut_test = aut_shuffle[((nrow(aut) * 2/3) + 1): nrow(aut), ]
-  control_test = control_shuffle[((nrow(control) * 2/3) + 1): nrow(control), ]
+  aut_train_y = autMap_shuffle$Treatment[1: (nrow(aut) * 2 / 3)]
   
+  control_train = control_shuffle[1: (nrow(control) * 2 / 3), ]
+  control_train_y = cMap_shuffle$Treatment[1: (nrow(control) * 2 / 3)]
+  
+  aut_test = aut_shuffle[((nrow(aut) * 2/3) + 1): nrow(aut), ]
+  aut_test_y = autMap_shuffle$Treatment[((nrow(aut) * 2/3) + 1): nrow(aut)]
+                                        
+  control_test = control_shuffle[((nrow(control) * 2/3) + 1): nrow(control), ]
+  control_test_y = cMap_shuffle$Treatment[((nrow(control) * 2/3) + 1): nrow(control)]
   
   train <- as.data.frame(rbind(aut_train, control_train))
+  train_y <- c(aut_train_y, control_train_y)
   test <- as.data.frame(rbind(aut_test, control_test))
-  results <- regression2(train, test, glmnet_family=glmnet_family, alpha = alpha, lambda = lambda)
+  test_y <- c(aut_test_y, control_test_y)
+  
+
+  
+  boost <- ada(as.matrix(train), train_y, as.matrix(test), test_y, type="discrete", iter = 20)
+  #results <- regression2(train, test, glmnet_family=glmnet_family, alpha = alpha, lambda = lambda)
   print(results)
   accuracy <- accuracy + results
 }
