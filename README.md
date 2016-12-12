@@ -1,7 +1,21 @@
 #####
+##Receive the raw files. Files come from Argonne in fastq format with an accompanying mapping file. Find raw data in /scratch/users/ctataru5/microbiome/raw. Find samples from...
+####Batch 1 : /scratch/users/ctataru5/microbiome/raw/December
+####Batch 2 : /scratch/users/ctataru5/microbiome/raw/March
+####Batch 3 : /scratch/users/ctataru5/microbiome/raw/April
+####Batch 4 : /scratch/users/ctataru5/microbiome/raw/August
+####Batch 5 : /scratch/users/ctataru5/microbiome/raw/October
+Every folder should contain its mapping file. This will take the form of a .txt document, most likely named something with "maude" in it. These come straight from Argonne.
+
+## Run Dada2 pipeline on the raw data. See README.md in dada2 folder for more details. This process will leave us with:
+#### 1. otu_table.txt
+#### 2. a seqs.txt document which is a fasta file detailing all the sequences used in the otu file. This is useful for constructing a phylogenetic tree if the dada2 pipeline fails to do so
+#### 3. tax_table.txt which is a sequence by taxonomic classification table
+### 4. tree.rds which is the output of optim.pml from the R package "phangorn". To access to tree itself, use tree = readRDS("outdir/tree.rds")$tree
+
 
 #####open_oct
-Otu tables of all sorts: original, normCSS (normalized with cumulative sum scoring) , pca_filtered, etc.
+Otu tables constructed using qiime: original, normCSS (normalized with cumulative sum scoring) , pca_filtered, etc.
 
 
 #####Qiime
