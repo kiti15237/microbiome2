@@ -4,7 +4,7 @@ css_normalized_otu_path <- "~/Lab/16S/dada2/filtered_otu_table_normCSS.biom"
 mapping_path <- "~/Lab/16S/mapping/mapping_file_MMD_11212016_FINAL.txt"
 
 getMapping <- function(){
-  mapping <- read.delim(mapping)
+  mapping <- read.delim(mapping_path)
   colnames(mapping)[1] = "SampleID"
   mapping$SampleID <- as.character(mapping$SampleID)
   mapping <- mapping[mapping$SampleID != "168.1",] #sequence sucks
