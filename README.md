@@ -11,7 +11,20 @@ Every folder should contain its mapping file. This will take the form of a .txt 
 #### 1. otu_table.txt
 #### 2. a seqs.txt document which is a fasta file detailing all the sequences used in the otu file. This is useful for constructing a phylogenetic tree if the dada2 pipeline fails to do so
 #### 3. tax_table.txt which is a sequence by taxonomic classification table
-### 4. tree.rds which is the output of optim.pml from the R package "phangorn". To access to tree itself, use tree = readRDS("outdir/tree.rds")$tree
+#### 4. tree.rds which is the output of optim.pml from the R package "phangorn". To access to tree itself, use tree = readRDS("outdir/tree.rds")$tree
+*All these outputs can be found in dada2/ folder
+*The major reason from using dada2 is error correction and data cleaning. This paper : http://biorxiv.org/content/early/2015/08/06/024034 : argues why this is a good method.
+
+## Alternatively, run qiime
+#### 1. Take the seqs.txt file from dada2 output, and run command pick_otus.py -i 'path to seqs.txt' -o 'path to qiime output' -m uclust. In this case, it was pick_otus.py -i $SCRATCH/microbiome/dada2/dada2_output_oct/seqs.fna -o $SCRATCH/microbiome/qiime/picked_otus_oct_open_2/ -m uclust
+*If you do this, substitute path to qiime folder every time you see path to dada2
+
+##Normalize:
+Here you have options. Rarefaction, DeSeq, of CSS. We chose CSS as per : http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531 - Susan Holmes
+####1. IF you are using dada2 solely, you will need to convert otu_table.txt to biom format. You can do this using the script scripts/write_otu_biom.R. Simply open R script, change path variable to dada2 folder, and params variables to basename of the file. If you followed above steps, path = dada2/ params = otu_table. 
+####2. Call the qiime command `normalize_table.py -i dada2/otu_table.biom -o dada2/otu_table_normCSS.biom`
+####3. For convenience, call `biom convert -i otu_table_normCSS.biom -o otu_table_normCSS.txt --to-tsv`
+
 
 
 #####open_oct
