@@ -1,10 +1,10 @@
 library(phyloseq)
 
-css_normalized_otu_path <- "~/Lab/16S/otuTables/open_oct/filtered_otu_table_normCSS.biom"
-
+css_normalized_otu_path <- "~/Lab/16S/dada2/filtered_otu_table_normCSS.biom"
+mapping_path <- "~/Lab/16S/mapping/mapping_file_MMD_11212016_FINAL.txt"
 
 getMapping <- function(){
-  mapping <- read.delim("~/Lab/16S/mapping/mapping_file_MMD_11212016_FINAL.txt")
+  mapping <- read.delim(mapping)
   colnames(mapping)[1] = "SampleID"
   mapping$SampleID <- as.character(mapping$SampleID)
   mapping <- mapping[mapping$SampleID != "168.1",] #sequence sucks
@@ -21,7 +21,15 @@ getMapping <- function(){
 }
 
 getOtuTable <- function(){
-  biom <-phyloseq::import_biom("~/Lab/16S/dada2/filtered_otu_table_normCSS.biom")
+  biom <-phyloseq::import_biom(css_normalized_otu_path)
+  table <- otu_table(biom, taxa_are_rows = T)
+  table <- table[apply(table, 1, function(row) return(sum(row) > 0)), ]
+  table <- formatTable(table)
+  return(table)
+}
+
+getTableQiime <- function(){
+  biom <- phyloseq::import_biom("~/Lab/16S/otuTables/open_oct/filtered_otu_table_normCSS.biom")
   table <- otu_table(biom, taxa_are_rows = T)
   table <- table[apply(table, 1, function(row) return(sum(row) > 0)), ]
   table <- formatTable(table)
