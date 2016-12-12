@@ -7,11 +7,15 @@
 ####Batch 5 : /scratch/users/ctataru5/microbiome/raw/October
 Every folder should contain its mapping file. This will take the form of a .txt document, most likely named something with "maude" in it. These come straight from Argonne.
 
+## Concatenate Mapping Files:
+####1. Using text editor(excel is easiest), concatenate all the mapping files together.
+####2. run qiime's `validate_mapping_file.py -m mapping.txt` to check that all is well. Might have to add an empty description column at the end, or check that all sample ids are unique, all barcode and linker sequences are present, etc. Check http://qiime.org/scripts/validate_mapping_file.html for details.
+
 ## Run Dada2 pipeline on the raw data. See README.md in dada2 folder for more details. This process will leave us with:
 #### 1. otu_table.txt
 #### 2. a seqs.txt document which is a fasta file detailing all the sequences used in the otu file. This is useful for constructing a phylogenetic tree if the dada2 pipeline fails to do so
 #### 3. tax_table.txt which is a sequence by taxonomic classification table
-#### 4. tree.rds which is the output of optim.pml from the R package "phangorn". To access to tree itself, use tree = readRDS("outdir/tree.rds")$tree
+#### 4. tree.tre which is the output of optim.pml from the R package "phangorn". 
 *All these outputs can be found in dada2/ folder
 *The major reason from using dada2 is error correction and data cleaning. This paper : http://biorxiv.org/content/early/2015/08/06/024034 : argues why this is a good method.
 
@@ -19,12 +23,36 @@ Every folder should contain its mapping file. This will take the form of a .txt 
 #### 1. Take the seqs.txt file from dada2 output, and run command pick_otus.py -i 'path to seqs.txt' -o 'path to qiime output' -m uclust. In this case, it was pick_otus.py -i $SCRATCH/microbiome/dada2/dada2_output_oct/seqs.fna -o $SCRATCH/microbiome/qiime/picked_otus_oct_open_2/ -m uclust
 *If you do this, substitute path to qiime folder every time you see path to dada2
 
+
+##Plot PCoA:
+To view your results in a pretty easy format, run qiime command beta_diversity_through_plots.py.
+####1. If using complete dada2 protocol, it will be `beta_diversity_through_plots.py -i dada2/otu_table.biom -m mapping.txt -t dada2/tree.tre -o plots_raw -f`
+####2. To view your results, navigate to plots_raw/weighted_unifrac_emperor_pcoa_plot and open index.html. Most likely, the data will look spread out, and in general need of normalization
+
 ##Normalize:
 Here you have options. Rarefaction, DeSeq, of CSS. We chose CSS as per : http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531 - Susan Holmes
 ####1. IF you are using dada2 solely, you will need to convert otu_table.txt to biom format. You can do this using the script scripts/write_otu_biom.R. Simply open R script, change path variable to dada2 folder, and params variables to basename of the file. If you followed above steps, path = dada2/ params = otu_table. 
 ####2. Call the qiime command `normalize_table.py -i dada2/otu_table.biom -o dada2/otu_table_normCSS.biom`
 ####3. For convenience, call `biom convert -i otu_table_normCSS.biom -o otu_table_normCSS.txt --to-tsv`
 
+
+## Replot normalizes PCoA:
+run qiime command beta_diversity_through_plots.py.
+####1.`beta_diversity_through_plots.py -i dada2/otu_table_normCSS.biom -m mapping.txt -t dada2/tree.tre -o plots_raw -f`
+####2. To view your results, navigate to plots_raw/weighted_unifrac_emperor_pcoa_plot and open index.html. Most likely, the data will look spread out, and in general need of normalization
+Most likely you will see some outliers. These are mostly samples that did not have a lot of mergable reads in the dada2 process, and therefore look very funky on the PCoA plot. 
+
+##Remove the outliers
+####1. Find out what sample ids correspond to the outliers on PCoA plot. Simplest way is to click on samples in the Key tab of emperor plot until the little white arrow that appears points to one of the outliers
+####2. create a 'samples_that_suck.txt' document, with one sample id per line
+####3. run qiime's `filter_samples_from_otu_table.py -i otu_table.biom -o filtered_otu_table.biom --negate_sample_id_fp --sample_id_fp samplesThatSuck.txt`
+####4. Re-normalize, and re-plot using the above 2 steps. Check out your new, filtered, normalized plots. Look good, right? :)
+
+
+
+
+
+`
 
 
 #####open_oct
