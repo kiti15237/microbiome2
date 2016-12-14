@@ -29,6 +29,12 @@ To view your results in a pretty easy format, run qiime command beta_diversity_t
 ####1. If using complete dada2 protocol, it will be `beta_diversity_through_plots.py -i dada2/otu_table.biom -m mapping.txt -t dada2/tree.tre -o plots_raw -f`
 ####2. To view your results, navigate to plots_raw/weighted_unifrac_emperor_pcoa_plot and open index.html. Most likely, the data will look spread out, and in general need of normalization
 
+
+![PCoA_noNorm](https://github.com/kiti15237/microbiome2/blob/master/figures/PCoA/dada2_noNorm_colPair.png)
+Format: ![Alt Text](https://github.com/kiti15237/microbiome2/blob/master/figures/PCoA/dada2_noNorm_colPair.png)
+
+
+
 ##Normalize:
 Here you have options. Rarefaction, DeSeq, of CSS. We chose CSS as per : http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531 - Susan Holmes
 ####1. IF you are using dada2 solely, you will need to convert otu_table.txt to biom format. You can do this using the script scripts/write_otu_biom.R. Simply open R script, change path variable to dada2 folder, and params variables to basename of the file. If you followed above steps, path = dada2/ params = otu_table. 
