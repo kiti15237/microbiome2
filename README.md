@@ -1,8 +1,11 @@
 #Important Data and Location
-###Otu Tables: in dada2 folder. Use filtered_otu_table_normCSS.biom, read in to R with phyloseq import_biom() function. Look in scripts/getTables.R for example of importing 
+###Otu Tables: in dada2 folder. Use filtered_otu_table_normCSS.biom, read in to R with phyloseq import_biom() function. Look in scripts/getTables.R for example of importing. 
+### Combined otu table and relevant mapping file info: filtered_otuTable_normCSS_info.txt. sample by taxa(and mapping info). In the class column, 1 means case, 0 means control
 ### Tax Tables and Trees: in dada2 folder. It is recommended to use tree file tree_midpointRoot.tre until a better rooting method is found. Can be read in as done in first chunk of scripts/Summary.Rmd
 ### /scripts/Summary.Rmd. Easiest way to read in data is displayed in first chunk. Most relevant analyses displayed here
 
+#Pipeline summary:
+We received the paired end sequencing information from Argonne. I'm not sure what protocol was used. We processed the sequencing information using dada2. The goal of dada2 is to assemble reads into denoised, chimera-free contigs, and then assign taxonomy to those contigs. Their claim to fame is that they resolve fine scale variation instead of lumping contigs into OTU's and taking a representative sequence. The details of this method can be found here: http://www.nature.com/nmeth/journal/v13/n7/pdf/nmeth.3869.pdf. The output of dada2 is a table of abundances, taxa by samples. We then build a phylogenetic tree of the taxa using phangorn.
 #Pipeline
 ##Receive the raw files. Files come from Argonne in fastq format with an accompanying mapping file. Find raw data in /scratch/users/ctataru5/microbiome/raw. Find samples from...
 ####Batch 1 : /scratch/users/ctataru5/microbiome/raw/December
