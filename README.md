@@ -31,7 +31,6 @@ To view your results in a pretty easy format, run qiime command beta_diversity_t
 
 
 ![PCoA_noNorm](https://github.com/kiti15237/microbiome2/blob/master/figures/PCoA/dada2_noNorm_colPair.png)
-Format: ![Alt Text](https://github.com/kiti15237/microbiome2/blob/master/figures/PCoA/dada2_noNorm_colPair.png)
 
 
 
@@ -42,11 +41,13 @@ Here you have options. Rarefaction, DeSeq, of CSS. We chose CSS as per : http://
 ####3. For convenience, call `biom convert -i otu_table_normCSS.biom -o otu_table_normCSS.txt --to-tsv`
 
 
-## Replot normalizes PCoA:
+## Replot normalized PCoA:
 run qiime command beta_diversity_through_plots.py.
 ####1.`beta_diversity_through_plots.py -i dada2/otu_table_normCSS.biom -m mapping.txt -t dada2/tree.tre -o plots_raw -f`
 ####2. To view your results, navigate to plots_raw/weighted_unifrac_emperor_pcoa_plot and open index.html. Most likely, the data will look spread out, and in general need of normalization
 Most likely you will see some outliers. These are mostly samples that did not have a lot of mergable reads in the dada2 process, and therefore look very funky on the PCoA plot. 
+
+![PCoA_noNorm](https://github.com/kiti15237/microbiome2/blob/master/figures/PCoA/dada2_normCSS_colPair.png)
 
 ##Remove the outliers
 ####1. Find out what sample ids correspond to the outliers on PCoA plot. Simplest way is to click on samples in the Key tab of emperor plot until the little white arrow that appears points to one of the outliers
@@ -54,7 +55,7 @@ Most likely you will see some outliers. These are mostly samples that did not ha
 ####3. run qiime's `filter_samples_from_otu_table.py -i otu_table.biom -o filtered_otu_table.biom --negate_sample_id_fp --sample_id_fp samplesThatSuck.txt`
 ####4. Re-normalize, and re-plot using the above 2 steps. Check out your new, filtered, normalized plots. Look good, right? :)
 
-
+![PCoA_noNorm](https://github.com/kiti15237/microbiome2/blob/master/figures/PCoA/dada2_normCSS_filtered_colPair.png)
 
 
 
