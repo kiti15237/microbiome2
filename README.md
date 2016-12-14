@@ -11,7 +11,7 @@
 ######Easiest way to read in data is displayed in first chunk. Most relevant analyses displayed here
 
 #Pipeline summary:
-We received the paired end sequencing information from Argonne. I'm not sure what protocol was used. We processed the sequencing information using dada2. The goal of dada2 is to assemble reads into denoised, chimera-free contigs, and then assign taxonomy to those contigs. Their claim to fame is that they resolve fine scale variation instead of lumping contigs into OTU's and taking a representative sequence. The details of this method can be found here: http://www.nature.com/nmeth/journal/v13/n7/pdf/nmeth.3869.pdf. The output of dada2 is a table of abundances, taxa by samples. We normalize these abundances using CSS after removing the outliers. You can see details about CSS here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4010126/, and details about outlier removal further in this document. We then build a phylogenetic tree of the taxa using phangorn. We do a multiple sequence alignment for all cleaned contigs present after dada2. Phangorn then builds a tree based on the similarities between sequences, with details here: https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btq706#1989321. What we have in the end is an unrooted tree, stored in dada2/tree_unrooted.tre. See "important data and location" for locations of all the aforementioned files. Additionally, 
+We received the paired end sequencing information from Argonne. I'm not sure what protocol was used. We processed the sequencing information using dada2. The goal of dada2 is to assemble reads into denoised, chimera-free contigs, and then assign taxonomy to those contigs. Their claim to fame is that they resolve fine scale variation instead of lumping contigs into OTU's and taking a representative sequence. The details of this method can be found here: http://www.nature.com/nmeth/journal/v13/n7/pdf/nmeth.3869.pdf. The output of dada2 is a table of abundances, taxa by samples. We normalize these abundances using CSS after removing the outliers. You can see details about CSS here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4010126/, and details about outlier removal further in this document. We then build a phylogenetic tree of the taxa using phangorn. We do a multiple sequence alignment for all cleaned contigs present after dada2. Phangorn then builds a tree based on the similarities between sequences, with details here: https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btq706#1989321. What we have in the end is an unrooted tree, stored in dada2/tree_unrooted.tre. See "important data and location" for locations of all the aforementioned files. 
 
 
 #Pipeline
@@ -76,7 +76,7 @@ Most likely you will see some outliers. These are mostly samples that did not ha
 
 
 `
-
+____________________________________________________________________________________________________________
 
 #####open_oct
 Otu tables constructed using qiime: original, normCSS (normalized with cumulative sum scoring) , pca_filtered, etc.
