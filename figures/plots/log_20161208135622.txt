@@ -1,0 +1,42 @@
+Logging started at 13:56:22 on 08 Dec 2016
+QIIME version: 1.9.1
+
+qiime_config values:
+pick_otus_reference_seqs_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta
+sc_queue	all.q
+pynast_template_alignment_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set_aligned/85_otus.pynast.fasta
+cluster_jobs_fp	start_parallel_jobs.py
+assign_taxonomy_reference_seqs_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta
+torque_queue	friendlyq
+jobs_to_start	1
+denoiser_min_per_core	50
+assign_taxonomy_id_to_taxonomy_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt
+temp_dir	/local-scratch/ctataru5/11203497/
+blastall_fp	blastall
+seconds_to_sleep	1
+
+parameter file values:
+parallel:jobs_to_start	1
+
+Input file md5 sums:
+otu_table.biom: e399f61fe43d38515da14f37e40fee5e
+../../raw/mapping/mapping_merged_oct.txt: e065f7d5775dbfaf91c2fc321be8d513
+
+Executing commands.
+
+# Beta Diversity (weighted_unifrac) command 
+beta_diversity.py -i otu_table.biom -o plots --metrics weighted_unifrac 
+
+
+
+*** ERROR RAISED DURING STEP: Beta Diversity (weighted_unifrac)
+Command run was:
+ beta_diversity.py -i otu_table.biom -o plots --metrics weighted_unifrac 
+Command returned exit status: 1
+Stdout:
+
+Stderr
+metric weighted_unifrac requires a tree, but none found
+
+
+Logging stopped at 13:56:23 on 08 Dec 2016

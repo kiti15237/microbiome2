@@ -1,0 +1,51 @@
+Logging started at 13:52:31 on 08 Dec 2016
+QIIME version: 1.9.1
+
+qiime_config values:
+pick_otus_reference_seqs_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta
+sc_queue	all.q
+pynast_template_alignment_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set_aligned/85_otus.pynast.fasta
+cluster_jobs_fp	start_parallel_jobs.py
+assign_taxonomy_reference_seqs_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/rep_set/97_otus.fasta
+torque_queue	friendlyq
+jobs_to_start	1
+denoiser_min_per_core	50
+assign_taxonomy_id_to_taxonomy_fp	/home/ctataru5/.local/lib/python2.7/site-packages/qiime_default_reference/gg_13_8_otus/taxonomy/97_otu_taxonomy.txt
+temp_dir	/local-scratch/ctataru5/11203497/
+blastall_fp	blastall
+seconds_to_sleep	1
+
+parameter file values:
+parallel:jobs_to_start	1
+
+Input file md5 sums:
+otu_table.txt: 9f0a9024fdf6f9f38b1e2980f3c55697
+../../raw/mapping/mapping_merged_oct.txt: e065f7d5775dbfaf91c2fc321be8d513
+
+Executing commands.
+
+# Beta Diversity (weighted_unifrac) command 
+beta_diversity.py -i otu_table.txt -o plots --metrics weighted_unifrac 
+
+
+
+*** ERROR RAISED DURING STEP: Beta Diversity (weighted_unifrac)
+Command run was:
+ beta_diversity.py -i otu_table.txt -o plots --metrics weighted_unifrac 
+Command returned exit status: 1
+Stdout:
+
+Stderr
+Traceback (most recent call last):
+  File "/home/ctataru5/bin/beta_diversity.py", line 152, in <module>
+    main()
+  File "/home/ctataru5/bin/beta_diversity.py", line 145, in main
+    opts.output_dir, opts.rows, full_tree=opts.full_tree)
+  File "/home/ctataru5/.local/lib/python2.7/site-packages/qiime/beta_diversity.py", line 145, in single_file_beta
+    otu_table = load_table(input_path)
+  File "/home/ctataru5/.local/lib/python2.7/site-packages/biom/parse.py", line 656, in load_table
+    raise TypeError("%s does not appear to be a BIOM file!" % f)
+TypeError: otu_table.txt does not appear to be a BIOM file!
+
+
+Logging stopped at 13:52:33 on 08 Dec 2016
