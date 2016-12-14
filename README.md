@@ -1,4 +1,9 @@
-#####
+#Important Data and Location
+###Otu Tables: in dada2 folder. Use filtered_otu_table_normCSS.biom, read in to R with phyloseq import_biom() function. Look in scripts/getTables.R for example of importing 
+### Tax Tables and Trees: in dada2 folder. It is recommended to use tree file tree_midpointRoot.tre until a better rooting method is found. Can be read in as done in first chunk of scripts/Summary.Rmd
+### /scripts/Summary.Rmd. Easiest way to read in data is displayed in first chunk. Most relevant analyses displayed here
+
+#Pipeline
 ##Receive the raw files. Files come from Argonne in fastq format with an accompanying mapping file. Find raw data in /scratch/users/ctataru5/microbiome/raw. Find samples from...
 ####Batch 1 : /scratch/users/ctataru5/microbiome/raw/December
 ####Batch 2 : /scratch/users/ctataru5/microbiome/raw/March
