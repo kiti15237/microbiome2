@@ -2,7 +2,9 @@
 ###Otu Tables: 
 ######in dada2 folder. Use filtered_otu_table_normCSS.biom, read in to R with phyloseq import_biom() function. Look in scripts/getTables.R for example of importing. 
 ### Combined otu table and relevant mapping file info: 
-######filtered_otuTable_normCSS_info.txt. sample by taxa(and mapping info). In the class column, 1 means case, 0 means control
+######filtered_otuTable_normCSS_info.txt. contig by sample(and mapping info). In the class column, 1 means case, 0 means control
+###Combind otu table and relevant mapping filer into AND tax assignments for contigs
+######filtered_otuTable_normCSS_info_taxa.txt. contig by sample and mapping info and taxanomic assignment
 ### Tax Tables and Trees: 
 ######in dada2 folder. It is recommended to use tree file tree_midpointRoot.tre until a better rooting method is found. Can be read in as done in first chunk of scripts/Summary.Rmd
 ### /scripts/Summary.Rmd. 
