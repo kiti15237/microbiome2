@@ -1,0 +1,285 @@
+---
+title: "Microbiome Analysis"
+output: html_document
+---
+
+#We're going to set up all the data and put it into a phyloseq object that easy to work with
+```{r loadData, warning=FALSE}
+library(phyloseq)
+library(ape)
+library(phytools)
+source("~/Lab/microbiome2/scripts/getTables.R")
+mapping <- getMapping()
+table <- getOtuTable()
+tax <- read.csv("~/Lab/16S/dada2/taxa_table.txt", row.names=1, sep="")
+tree = read.tree("~/Lab/16S/dada2/tree_midpointRoot.tre")
+
+metadata <- sample_data(data.frame( SampleID = mapping$SampleID,
+                                    pair=mapping$Pair, 
+                                    classifier=mapping$classifier,
+                                    age=mapping$age_month_ok, 
+                                    batch=factor(mapping$batch),
+                                    treatment= factor(mapping$Treatment, levels = c("Aut", "Control"))))
+rownames(metadata) <- mapping$SampleID
+
+ps <- phyloseq(otu_table(table, taxa_are_rows=T), 
+               sample_data(metadata), 
+               tax_table(as.matrix(tax)), 
+               phy_tree(tree))
+
+ps_aut <- subset_samples(ps, treatment == "Aut")
+ps_control <- subset_samples(ps, treatment == "Control")
+
+```
+
+#Delta Between Classes
+###Weighted Unifrac Distances between Aut-Aut samples and Control-Control samples
+Note that Unifrac distance goes from 0 to 1. The resulting figure should be interpreted with this in mind.
+```{r WeightedUnifracDistances, warning=FALSE}
+distance_measure = "wunifrac"
+dists_aut <- phyloseq::distance(ps_aut, method = distance_measure)
+dists_control <- phyloseq::distance(ps_control, method = distance_measure)
+
+par(xpd=TRUE, mar = c(5,6,7,3))
+plot(density(as.vector(dists_control)), col = "blue", 
+     main= "Wunifrac Distances within same phenotype group", xlab = "Weighted Unifrac Distance")
+lines(density(as.vector(dists_aut)), col = "red")
+
+pvalue <- ks.test(as.vector(dists_control), as.vector(dists_aut))$p.value
+print(pvalue)
+
+boxplot(dists_aut, dists_control, names=c("Aut-Aut distances", "Control-Control distances"),
+        main = "Weighted Unifrac Distances Between Samples", 
+        sub=paste(ks.test(dists_aut, dists_control)$p.value)
+        )
+```
+
+###Unifrac Distances between Aut-Aut samples and Control-Control samples
+This measure is a prescence/absence metric. It is not recommended to use along with css normalization (which is used on this dataset). Therefore, we should not use this in our analysis
+```{r UnifracDistances, warning=FALSE}
+distance_measure = "unifrac"
+dists_aut <- phyloseq::distance(ps_aut, method = distance_measure)
+dists_control <- phyloseq::distance(ps_control, method = distance_measure)
+
+par(xpd=TRUE, mar = c(5,6,7,3))
+plot(density(as.vector(dists_control)), col = "blue", 
+     main= "Unifrac Distances within same phenotype group", xlab = "Weighted Unifrac Distance")
+lines(density(as.vector(dists_aut)), col = "red")
+
+pvalue <- ks.test(as.vector(dists_control), as.vector(dists_aut))$p.value
+print(pvalue)
+```
+
+###Weighted Unifrac Distances between Aut-Aut samples and Control-Control samples with data from qiime otu picking (Instead of dada2)
+Originally, we processed all data using dada2 for error cleaning and qiime for otu picking. For completeness, the distance graphs using this dataset are presented
+```{r WeightedUnifracDistancesQiime, warning=FALSE}
+ps_qiime <- readRDS("~/Lab/16S/otuTables/open_oct/ps_qiime.rds")
+distance_measure = "wunifrac"
+ps_aut_qiime <- subset_samples(ps_qiime, treatment == "Aut")
+ps_control_qiime <- subset_samples(ps_qiime, treatment == "Control")
+dists_aut_qiime <- phyloseq::distance(ps_aut_qiime, method = distance_measure)
+dists_control_qiime <- phyloseq::distance(ps_control_qiime, method = distance_measure)
+dists_qiime <-as.matrix(phyloseq::distance(ps_qiime, method = distance_measure))
+
+par(xpd=TRUE, mar = c(5,6,7,3))
+plot(density(as.vector(dists_control_qiime)), col = "blue", 
+     main= "Wunifrac Distances within same phenotype groups \n PCA filtered data", xlab = "Weighted Unifrac Distance",
+     xlim=c(0, 0.5))
+lines(density(as.vector(dists_aut_qiime)), col = "red")
+
+boxplot(dists_aut_qiime, dists_control_qiime, names=c("Aut-Aut distances", "Control-Control distances"),
+        main = "Weighted Unifrac Distances Between Samples", 
+        sub=paste(ks.test(dists_aut_qiime, dists_control_qiime)$p.value)
+        )
+```
+
+
+#Machine Learning
+###Functino to return Training / Testing Sets
+It is important to make sure that sibling pairs are place either in the train set or the test set, and not split between both. Takes in an otu table containing only autistic samples, an otu table containing only control samples, and a mapping file for each
+```{r getTrainTestSet, warning=FALSE}
+#The weird deconstruction and re-construction is because phyloseq objects completely misbehave when used within functions
+getTrainTestSet <- function(ps, train_size){
+  sampleData <- sample_data(ps)
+  otuTable <- otu_table(ps)
+  otuTable <- t(otuTable)
+  taxTable <- tax_table(ps)
+  tree <- phy_tree(ps)
+  
+  pairs <- sort(sampleData$pair)
+  pairIds <- sort(unique(sampleData$pair))
+  pairIds <- sort(pairIds[table(pairs) == 2])
+  
+  train_pairs <- sort(sample(pairIds, train_size, replace=F))
+  test_pairs <- sort(pairIds[!(pairIds %in% train_pairs)])
+  
+  
+  sampleData_train <- sampleData[sampleData$pair %in% train_pairs,]
+  otuTable_train <- otuTable[sampleData$pair %in% train_pairs,]
+  sampleData_test <- sampleData[sampleData$pair %in% test_pairs,]
+  otuTable_test <- otuTable[sampleData$pair %in% test_pairs, ]
+  
+  ps_train <- phyloseq(otu_table(otuTable_train), 
+                       sample_data(sampleData_train),
+                       tax_table(taxTable),
+                       phy_tree(tree))
+  
+  
+  ps_test <- phyloseq(otu_table(otuTable_test), 
+                      sample_data(sampleData_test),
+                      tax_table(taxTable),
+                      phy_tree(tree))
+  
+  
+  return(list(ps_train, ps_test))
+}
+```
+
+###Introduce some function to get otus with high mutual information
+```{r mututalInfo, warning=FALSE}
+library(entropy)
+
+getMI <- function(otuVector, mapping){
+  y <- matrix(c(0,0,0,0), nrow=2)
+  #Create confustion matrix
+  #(1,1) = no Aut, no otu =
+  y[1,1] <- sum(mapping$Treatment == "Control" & otuVector == 0)
+  #(1,2) = no Aut, otu
+  y[1,2] <- sum(mapping$Treatment == "Control" & otuVector > 0)
+  #(2,1) = Aut, not otu
+  y[2,1] <- sum(mapping$Treatment == "Aut" & otuVector == 0)
+  #(2,2) = Aut, otu
+  y[2,2] <- sum(mapping$Treatment == "Aut" & otuVector > 0)
+  
+  return(mi.empirical(y))
+}
+
+getOtusMICutoff <- function(table, mapping, cutoff){
+  otu_MI <- apply(table, 2, getMI, mapping)
+  return(names(otu_MI[otu_MI > cutoff]))
+}
+
+```
+
+##Function to perform leave 2 out validation, where we train a new NB classifier using the MI cutoff provided for every l2o train/test set. Return the average train/test error for that cutoff
+```{r trainParameterNaiveBayes, warning=FALSE}
+trainParameterNaiveBayes <- function(cutoff, ps_train){
+  sampleData <- sample_data(ps_train)
+  otuTable <- otu_table(ps_train)
+  
+  
+  nsamples <- nrow(otuTable)
+  testObjs <- list()
+  trainObjs <- list()
+  
+  test_objs <- lapply(seq(1,nrow(otuTable)-1, by=2), function(i) return(list(otuTable[c(i, i+1),], sampleData[c(i, i+1),])))
+  train_objs <- lapply(seq(1,nrow(otuTable)-1, by = 2), function(i) return(list(otuTable[-c(i, i+1),], sampleData[-c(i, i+1),])))
+  
+  models <- lapply(train_objs, trainNaiveBayes, cutoff=cutoff)
+  train_error <- sapply(models, function(m) return(m$trainError))
+  train_error <- mean(train_error)
+  test_predictions <- mapply(function(m, test_obj) return(predict(m, test_obj[[1]])), models, test_objs)
+  test_actual <- sapply(test_objs, function(test_obj) return(test_obj[[2]]$treatment))
+  test_error <- sum(test_predictions != test_actual) / length(test_actual)
+  
+  return(list(train_error, test_error))
+}
+
+```
+
+###Naive Bayes Classifier
+```{r trainModelNaiveBayes, warning=FALSE}
+library(e1071)
+
+trainNaiveBayes <- function(train_obj, cutoff){
+  trainTable <- train_obj[[1]]
+  sampleData <- train_obj[[2]]
+
+  #Get otus with very high mutual information with autism
+  imp_otus <- getOtusMICutoff(trainTable, mapping, cutoff)
+ 
+  
+  #Get only high MI otus
+  trainTable_reduced <- trainTable[,colnames(trainTable) %in% imp_otus ]
+  
+  # add a case sample and control sample, each with laplaceConstant
+  laplaceConstant = 2
+  trainTable_reduced_laplace <- rbind(trainTable_reduced, rep(laplaceConstant,ncol(trainTable_reduced)), rep(laplaceConstant, ncol(trainTable_reduced)))
+  treatments <- c(as.character(sampleData$treatment), "Aut", "Control")
+  
+  data = data.frame(cbind(trainTable_reduced_laplace,  treatments))
+  m <- naiveBayes(trainTable_reduced_laplace, as.factor(treatments))
+  pred_train <- predict(m, trainTable_reduced)
+  
+  m$trainError = sum(pred_train != sampleData$treatment) /length(sampleData$treatment)
+  
+  return(m)
+}
+```
+
+###run if you want a graph showing training/ testing error on different MI cutoffs
+```{r errorCutoffs, warning=FALSE}
+errorsbyCutoff <- function(){
+  temp <- getTrainTestSet(ps, 40)
+  ps_train <- temp[[1]]
+  ps_test <- temp[[2]]
+  
+  source("~/Lab/16S/scripts/mutualInformation.R")
+  #find a cutoff that makes sense
+  cutoffs <- seq(0, 0.03, by = .002)
+  errors <- lapply(cutoffs, trainParameterNaiveBayes, ps_train)
+  training_errors <-  unlist(errors)[rep(c(TRUE, FALSE), length(errors))]
+  testing_errors <- unlist(errors)[rep(c(FALSE,TRUE), length(errors))]
+  cutoff = cutoffs[testing_errors == min(testing_errors)]
+  
+  #train model on entire train set
+  train_obj <- list(otu_table(ps_train), sample_data(ps_train))
+  m <- trainNaiveBayes(train_obj, cutoff=cutoff)
+  p <- predict(m, otu_table(ps_test))
+  actual <- sample_data(ps_test)$treatment
+  error_validation <- sum(actual != p) / length(p)
+  print(error_validation)
+  
+  p_train <- predict(m, otu_table(ps_train))
+  actual_train <- sample_data(ps_train)$treatment
+  error_train <- sum(actual_train != p_train) / length(p_train)
+  print(error_train)
+  
+  
+  plot(cutoffs, testing_errors, type ='l', col="red", ylim = c(0,1), ylab="error",
+       main="NaiveBayes Error as Mutual Information Cutoff Increases", sub=paste("validation Error with cutoff 0: ", error_validation))
+  lines(cutoffs, training_errors, col = "blue")
+  legend("topright", c("Testing Error", "Training Error"), fill = c('red', 'blue'))
+
+}
+errorsbyCutoff()
+```
+
+###Predict using Naive Bayes classifier train on random testing/training partition. Repeat multiple times and take the average to get a solid error score
+```{r getError, warning=FALSE}
+library(pROC)
+iterations <- 10
+cutoff <- .01
+train_errors <- c()
+test_errors <- c()
+rocs <- list()
+for(i in seq(1,iterations)){
+  tmp <- getTrainTestSet(ps, train_size = 40)
+  ps_train <- tmp[[1]]
+  ps_validation <- tmp[[2]]
+  m <- trainNaiveBayes(list(otu_table(ps_train), sample_data(ps_train)), cutoff)
+  p <- predict(m, otu_table(ps_validation))
+  print(p)
+  train_error <- m$trainError
+  test_error <- sum(p!= sample_data(ps_validation)$treatment) / length(p)
+  train_errors <- c(train_errors, train_error)
+  test_errors <- c(test_errors, test_error)
+  rocs <- list(rocs, roc(1*(sample_data(ps_validation)$treatment=="Aut"), 1*(p=="Aut")))
+}
+
+print(mean(train_errors))
+print(mean(test_errors))
+
+```
+
+
