@@ -6,7 +6,8 @@
 ###Combind otu table and relevant mapping filer into AND tax assignments for contigs
 ######filtered_otuTable_normCSS_info_taxa.txt. contig by sample and mapping info and taxanomic assignment
 Nifty bit of code to collapse table by taxonomic level:
-``` table <- read.csv("~/Lab/16S/dada2/filtered_otuTable_normCSS_info_taxa.txt", row.names=1, sep="")
+```
+  table <- read.csv("~/Lab/16S/dada2/filtered_otuTable_normCSS_info_taxa.txt", row.names=1, sep="")
   table <- table[1:(nrow(table) - 3), ]
   treatment <- table["class",]
   classifier <- table["classfier", ]
