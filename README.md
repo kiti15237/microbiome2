@@ -5,6 +5,15 @@
 ######filtered_otuTable_normCSS_info.txt. contig by sample(and mapping info). In the class column, 1 means case, 0 means control
 ###Combind otu table and relevant mapping filer into AND tax assignments for contigs
 ######filtered_otuTable_normCSS_info_taxa.txt. contig by sample and mapping info and taxanomic assignment
+Nifty bit of code to collapse table by taxonomic level:
+`table <- read.csv("~/Lab/16S/dada2/filtered_otuTable_normCSS_info_taxa.txt", row.names=1, sep="")
+table <- table[1:(nrow(table) - 3), ]
+treatment <- table["class",]
+classifier <- table["classfier", ]
+pair <- table["pair",]
+collapsed <- ddply(table, "Family", numcolwise(sum))
+collapsed <- as.data.frame(rbind(collapsed, treatment = treatment, classifier = classifier, pair = pair))
+`
 ### Tax Tables and Trees: 
 ######in dada2 folder. It is recommended to use tree file tree_midpointRoot.tre until a better rooting method is found. Can be read in as done in first chunk of scripts/Summary.Rmd
 ### /scripts/Summary.Rmd. 
